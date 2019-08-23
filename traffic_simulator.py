@@ -3,7 +3,7 @@ from scapy.all import *
 
 import argparse
 import sys, os
-#import create_packet
+import create_packet
 
 header = "\
 ___________              _____  _____.__           ________                                   __                \n\
@@ -24,30 +24,35 @@ def colorize(string, color):
     return colors[color] + string + '\033[0m'
  
 def create_pcap():
-    print "You called foo()"
+    print "You called create_pcap()"
+    create_packet.makepcap()
     raw_input("Press [Enter] to continue...")
  
 def select_pcap():
-    print "You called bar()"
+    print "You called select_pcap()"
     raw_input("Press [Enter] to continue...")
 
-def select_nic():
-    print "You called bar()"
+def play_pcap():
+    print "You called play_pcap()"
+    create_packet.play_via_tcpreplay()
     raw_input("Press [Enter] to continue...")
- 
+
 menuItems = [
     { "Create pcap": create_pcap },
     { "Play selected pcap": select_pcap },
-    { "Select network interface to transmit packets": select_nic },
+    { "Select network interface to transmit packets": play_pcap },
     { "Exit": exit },
 ]
- 
+
+def init_menu_screen():
+    os.system('clear')
+    # Print some badass ascii art header here !
+    print colorize(header, 'pink')
+    print colorize('version 0.1\n', 'green')
+
 def main():
     while True:
-        os.system('clear')
-        # Print some badass ascii art header here !
-        print colorize(header, 'pink')
-        print colorize('version 0.1\n', 'green')
+        init_menu_screen()
         for item in menuItems:
             print colorize("[" + str(menuItems.index(item)) + "] ", 'blue') + item.keys()[0]
         choice = raw_input(">> ")

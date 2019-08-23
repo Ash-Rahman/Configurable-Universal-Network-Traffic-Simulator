@@ -26,7 +26,7 @@ def makepcap():
     ether_1_addr = "90:e2:ba:aa:78:a8"
     ether_2_addr = "90:e2:ba:aa:69:05"
 
-    while (count < 40000):
+    while (count < 400):
 
         ipv4Add1 = generate_ipv4_addr()
         ipv4Add2 = generate_ipv4_addr()
@@ -87,7 +87,7 @@ def play_pcap():
         s.send(pkt)
 
 def play_via_tcpreplay():
-    print("Number of packets generated: " + str(len(pkts)))
+    print("Playing pcap via tcpreplay")
     command = subprocess.Popen(["tcpreplay", "-i", "enp3s0f0", "large_incremental_length_test.pcap"], stdout=subprocess.PIPE)
     output = command.communicate()[0]
 
@@ -106,8 +106,8 @@ def generate_ipv6_addr():
     #print(addr_str)
 
     return addr_str
-
-def main():
+'''
+def make_pcap():
     t0 = time.time()
     makepcap()
     wrpcap("large_incremental_length_test.pcap", pkts)
@@ -119,5 +119,6 @@ def main():
     play_via_tcpreplay()
     t3 = time.time()
     print("Time taken to play traffic: " + str(t3 - t2))
-main()
+'''
+#main()
 #wrpcap("incremental_length_test.pcap", pkts)

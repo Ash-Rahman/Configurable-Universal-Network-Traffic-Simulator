@@ -3,37 +3,26 @@
 from scapy.all import *
 
 from random import getrandbits
-from ipaddress import IPv4Address, IPv6Address 
+from ipaddress import IPv4Address, IPv6Address
 import sys
 import time
 import subprocess
 
 pkts = []
-#pkts=rdpcap("large_incremental_length_test.pcap")
 count = 0
+ether_1_addr = "90:e2:ba:aa:78:a8"
+ether_2_addr = "90:e2:ba:aa:69:05"
 
-def makepcap():
+def create_tcp_flow(number_of_flows):
     global pkts
-    global count 
+    global count
     pktSeq1 = 1
     pktSeq2 = 1
-    count = 0
-    iter = 0
 
-    #ether_1_addr = "0a:01:01:01:01:01"
-    #ether_2_addr = "0a:02:02:02:02:02"
-
-    ether_1_addr = "90:e2:ba:aa:78:a8"
-    ether_2_addr = "90:e2:ba:aa:69:05"
-
-    while (count < 400):
-
+    while (count < number_of_flows):
+        #ipv6Add = generate_ipv6_addr()
         ipv4Add1 = generate_ipv4_addr()
         ipv4Add2 = generate_ipv4_addr()
-
-        #ipv4Add1 = "62.29.219.100"
-        #ipv4Add2 = "73.34.151.185"
-        ipv6Add = generate_ipv6_addr()
 
         # SYN message
         p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv4Add1,dst=ipv4Add2)/TCP(sport=26,dport=40,flags='S',seq=0,ack=0)
@@ -58,16 +47,6 @@ def makepcap():
         p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv4Add2,dst=ipv4Add1)/TCP(sport=40,dport=26,flags='PA',seq=pktSeq2)/Raw(RandString(size=1))
         pkts.append(p)
         pktSeq2 += count;
-        
-        # Add a print here - to display progress.
-
-        # Increment UDP packets
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv4Add1,dst=ipv4Add2)/UDP(sport=26,dport=40)/Raw(RandString(size=1))
-        pkts.append(p)
-
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv4Add2,dst=ipv4Add1)/UDP(sport=40,dport=26)/Raw(RandString(size=1))
-        pkts.append(p)
-        #iter += 1
 
         # FIN message
         p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv4Add1,dst=ipv4Add2)/TCP(sport=26,dport=40,flags='F',seq=pktSeq1,ack=0)
@@ -78,6 +57,31 @@ def makepcap():
         pkts.append(p)
 
         count += 1
+
+    completed_flow_array = pkts
+    pkts = []
+    return completed_flow_array
+
+def create_udp_flow(number_of_flows):
+    global pkts
+    global count
+
+    while (count < number_of_flows):
+        ipv4Add1 = generate_ipv4_addr()
+        ipv4Add2 = generate_ipv4_addr()
+
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv4Add1,dst=ipv4Add2)/UDP(sport=26,dport=40)/Raw(RandString(size=1))
+        pkts.append(p)
+
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv4Add2,dst=ipv4Add1)/UDP(sport=40,dport=26)/Raw(RandString(size=1))
+        pkts.append(p)
+
+        count += 1
+
+    completed_flow_array = pkts
+    pkts = []
+    return completed_flow_array
+
 
 def play_pcap():
     #pcap = rdpcap('incremental_length_test.pcap')
@@ -106,6 +110,10 @@ def generate_ipv6_addr():
     #print(addr_str)
 
     return addr_str
+
+def create_pcap_file(user_traffic_config):
+    wrpcap("user_generated.pcap", user_traffic_config)
+
 '''
 def make_pcap():
     t0 = time.time()

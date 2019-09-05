@@ -24,7 +24,7 @@ def clear_complete_packet_list():
 
 """
 Purpose: Generates a tcp flow
-parameters: (int) takes a number of flows to generate
+parameters: number_of_flows (int) takes a number of flows to generate
 Returns: N/A
 """
 def create_tcp_flow(number_of_flows):
@@ -70,12 +70,11 @@ def create_tcp_flow(number_of_flows):
         count += 1
 
     complete_packet_list.extend(packet_list)
-    print("create packet: " + str(complete_packet_list))
     packet_list = []
 
 """
 Purpose: Generates a udp flow
-parameters: (int) takes a number of flows to generate
+parameters: number_of_flows (int) takes a number of flows to generate
 Returns: N/A
 """
 def create_udp_flow(number_of_flows):
@@ -99,11 +98,11 @@ def create_udp_flow(number_of_flows):
 
 """
 Purpose: Transmits pcap file through interface
-parameters: (string) takes a network interface name
+parameters: interface (string) takes a network interface name
 Returns: N/A
 """
 def play_pcap(interface):
-    print("\nPlaying pcap via tcpreplay")
+    print("\nPlaying pcap")
     print("\nThis may take some time")
     s = conf.L3socket(iface=interface)
     pcap = rdpcap("user_generated.pcap")

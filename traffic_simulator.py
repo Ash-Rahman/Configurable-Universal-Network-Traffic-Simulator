@@ -50,12 +50,6 @@ def create_pcap_menu():
         print("\nYou must only select either A, B or C")
         print("\nPlease try again")
     create_pcap_menu()
-    #raw_input("Press [Enter] to continue...")
-
-
-def select_pcap():
-    print ("You called select_pcap()")
-    #raw_input("Press [Enter] to continue...")
 
 def play_pcap():
     print ("\nYou selected: Play pcap! ")
@@ -67,8 +61,6 @@ def play_pcap():
 
 
 def display_menu_screen():
-    #os.system('clear')
-    # Print some badass ascii art header here !
     print (header)
     print "version 0.1\n"
 
@@ -88,7 +80,6 @@ def display_menu_screen():
     else:
         print("You must only select either A or B")
         print("Please try again")
-        #display_menu_screen()
 
 def main():
     os.system('clear')

@@ -13,10 +13,20 @@ ether_2_addr = "90:e2:ba:aa:69:05"
 
 complete_packet_list = []
 
+"""
+Purpose: Clears the array of packets once the generated flows have been saved to pcap
+parameters: N/A
+Returns: N/A
+"""
 def clear_complete_packet_list():
     global complete_packet_list
     complete_packet_list = []
 
+"""
+Purpose: Generates a tcp flow
+parameters: (int) takes a number of flows to generate
+Returns: N/A
+"""
 def create_tcp_flow(number_of_flows):
     packet_list = []
     pktSeq1 = 1
@@ -24,7 +34,6 @@ def create_tcp_flow(number_of_flows):
     count = 0
 
     while (count < int(number_of_flows)):
-        #ipv6Add = generate_ipv6_addr()
         ipv4Add1 = generate_ipv4_addr()
         ipv4Add2 = generate_ipv4_addr()
 
@@ -64,6 +73,11 @@ def create_tcp_flow(number_of_flows):
     print("create packet: " + str(complete_packet_list))
     packet_list = []
 
+"""
+Purpose: Generates a udp flow
+parameters: (int) takes a number of flows to generate
+Returns: N/A
+"""
 def create_udp_flow(number_of_flows):
     packet_list = []
     count = 0
@@ -83,6 +97,11 @@ def create_udp_flow(number_of_flows):
     complete_packet_list.extend(packet_list)
     packet_list = []
 
+"""
+Purpose: Transmits pcap file through interface
+parameters: (string) takes a network interface name
+Returns: N/A
+"""
 def play_pcap(interface):
     print("\nPlaying pcap via tcpreplay")
     print("\nThis may take some time")
@@ -92,28 +111,28 @@ def play_pcap(interface):
         s.send(pkt)
     print("\nDone!")
 
+"""
+Purpose: Generate a random ipv4 address
+parameters: N/A
+Returns: (string) Ipv4 address
+"""
 def generate_ipv4_addr():
     bits = getrandbits(32)
     addr = IPv4Address(bits)
     addr_str = str(addr)
-    #print(addr_str)
 
     return addr_str
 
-def generate_ipv6_addr():
-    bits = getrandbits(128)
-    addr = IPv6Address(bits)
-    addr_str = addr.exploded
-    #print(addr_str)
-
-    return addr_str
-
+"""
+Purpose: Take array of flows and write to pcap.
+parameters: N/A
+Returns: N/A
+"""
 def create_pcap_file():
     if len(complete_packet_list) != 0:
         print ("\nCreating your Pcap, this may take some time...")
-        #print("user_traffic: " + str(complete_packet_list))
         wrpcap("user_generated.pcap", complete_packet_list)
         clear_complete_packet_list()
-        print ("\nPcap creation done!")
+        print ("\nPcap 'user_generated.pcap' created!")
     else:
         print ("\nYou have not created any packets to save!")

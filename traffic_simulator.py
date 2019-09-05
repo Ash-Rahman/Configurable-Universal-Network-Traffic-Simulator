@@ -6,7 +6,6 @@ import create_packet
 import numbers
 import time
 
-pkts = []
 
 header = "\
 ___________              _____  _____.__           ________                                   __                \n\
@@ -15,10 +14,8 @@ ___________              _____  _____.__           ________                     
   |    |   |  | \// __ \|  |   |  |  |  \  \___  \    \_\  \  ___/|   |  \  ___/|  | \// __ \|  | (  <_> )  | \/ \n\
   |____|   |__|  (____  /__|   |__|  |__|\___  >  \______  /\___  >___|  /\___  >__|  (____  /__|  \____/|__|   \n\
                       \/                     \/          \/     \/     \/     \/           \/                   \n"
-def create_pcap():
-    global pkts
-    print ("pkts" + str(pkts))
-    print ("You selected: Create pcap!")
+def create_pcap_menu():
+    print ("\nYou selected: Create pcap!")
     choice1 = raw_input("""  
                 A: Create TCP flow
                 B: Create UDP flow
@@ -28,34 +25,31 @@ def create_pcap():
     if choice1 == "A" or choice1 =="a":
         number_of_TCP_flows = raw_input("\nEnter number of TCP flows: ")
         if number_of_TCP_flows.isdigit():
-            tcp_flow = create_packet.create_tcp_flow(number_of_TCP_flows)
-            pkts.append(tcp_flow)
+            create_packet.create_tcp_flow(number_of_TCP_flows)
             print ("\nTCP flow created, remember to save the pcap!")
-            create_pcap()
+            create_pcap_menu()
         else:
             print ("\nPlease Enter a valid number!")
-            create_pcap()
+            create_pcap_menu()
     elif choice1 == "B" or choice1 =="b":
         number_of_UDP_flows = raw_input("\nEnter number of UDP flows")
         if number_of_UDP_flows.isdigit():
-            udp_flow = create_packet.create_udp_flow(number_of_UDP_flows)
-            pkts.append(udp_flow)
+            create_packet.create_udp_flow(number_of_UDP_flows)
             print ("\nUDP flow created, remember to save the pcap!")
-            create_pcap()
+            create_pcap_menu()
         else:
             print ("\nPlease Enter a valid number!")
-            create_pcap()
+            create_pcap_menu()
     elif choice1 == "C" or choice1 =="c":
-        create_packet.create_pcap_file(pkts[0])
-        pkts = []
+        create_packet.create_pcap_file()
+        create_pcap_menu()
     elif choice1 == "D" or choice1 =="d":
-        pkts = []
         os.system('clear')
         display_menu_screen()
     else:
         print("\nYou must only select either A, B or C")
         print("\nPlease try again")
-    create_pcap()
+    create_pcap_menu()
     #raw_input("Press [Enter] to continue...")
 
 
@@ -64,7 +58,9 @@ def select_pcap():
     #raw_input("Press [Enter] to continue...")
 
 def play_pcap():
-    print ("You selected play pcap")
+    print ("\nYou selected play pcap! ")
+    os.listdir('/sys/class/net/')
+    interface = raw_input("\nEnter interface to play pcap out of: ")
     create_packet.play_via_tcpreplay()
     #raw_input("Press [Enter] to continue...")
 
@@ -82,7 +78,7 @@ def display_menu_screen():
                 Please enter your choice: """)
 
     if choice == "A" or choice =="a":
-        create_pcap()
+        create_pcap_menu()
     elif choice == "B" or choice =="b":
         play_pcap()
     elif choice=="Q" or choice=="q":

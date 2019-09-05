@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from scapy.all import *
 
 import argparse
 import sys, os
@@ -17,45 +16,43 @@ ___________              _____  _____.__           ________                     
                       \/                     \/          \/     \/     \/     \/           \/                   \n"
 def create_pcap():
     global pkts
-
+    print "pkts" + str(pkts)
     print "You selected: Create pcap!"
-    choice = input("""  A: Create TCP flow
-                        B: Create UDP flow
-                        C: Save PCAP
-                        D: Return to main menu
-                        Please enter your choice: """)
-    if choice == "A" or choice =="a":
-        number_of_TCP_flows = raw_input("Enter number of TCP flows")
+    choice1 = raw_input("""  
+                A: Create TCP flow
+                B: Create UDP flow
+                C: Save PCAP
+                D: Return to main menu
+                Please enter your choice: """)
+    if choice1 == "A" or choice1 =="a":
+        number_of_TCP_flows = raw_input("\nEnter number of TCP flows: ")
         if number_of_TCP_flows.isdigit():
             tcp_flow = create_packet.create_tcp_flow(number_of_TCP_flows)
             pkts.append(tcp_flow)
-            print "this is pkts print 1:" pkts
-            print "TCP flow created, remember to save the pcap!"
+            print "\nTCP flow created, remember to save the pcap!"
             create_pcap()
         else:
-            print "Please Enter a valid number!"
+            print "\nPlease Enter a valid number!"
             create_pcap()
-    elif choice == "B" or choice =="b":
-        number_of_UDP_flows = raw_input("Enter number of UDP flows")
+    elif choice1 == "B" or choice1 =="b":
+        number_of_UDP_flows = raw_input("\nEnter number of UDP flows")
         if number_of_UDP_flows.isdigit():
             udp_flow = create_packet.create_udp_flow(number_of_UDP_flows)
             pkts.append(udp_flow)
-            print "UDP flow created, remember to save the pcap!"
+            print "\nUDP flow created, remember to save the pcap!"
             create_pcap()
         else:
-            print "Please Enter a valid number!"
+            print "\nPlease Enter a valid number!"
             create_pcap()
-    elif choice == "C" or choice =="c":
-        print "Creating your Pcap, this may take some time..."
+    elif choice1 == "C" or choice1 =="c":
         create_packet.create_pcap_file(pkts)
-        print "Pcap creation done!"
         pkts = []
-    elif choice == "D" or choice =="d":
+    elif choice1 == "D" or choice1 =="d":
         pkts = []
         display_menu_screen()
     else:
-        print("You must only select either A, B or C")
-        print("Please try again")
+        print("\nYou must only select either A, B or C")
+        print("\nPlease try again")
     create_pcap()
     #raw_input("Press [Enter] to continue...")
 
@@ -75,12 +72,12 @@ def display_menu_screen():
     print (header)
     print "version 0.1\n"
 
-    choice = input("""
-                      A: Create Pcap
-                      B: Play Pcap
-                      Q: Quit/Log Out
+    choice = raw_input("""
+                A: Create Pcap
+                B: Play Pcap
+                Q: Quit/Log Out
 
-                      Please enter your choice: """)
+                Please enter your choice: """)
 
     if choice == "A" or choice =="a":
         create_pcap()

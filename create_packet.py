@@ -102,13 +102,17 @@ parameters: interface (string) takes a network interface name
 Returns: N/A
 """
 def play_pcap(interface):
-    print("\nPlaying pcap")
-    print("\nThis may take some time")
-    s = conf.L3socket(iface=interface)
-    pcap = rdpcap("user_generated.pcap")
-    for pkt in pcap:
-        s.send(pkt)
-    print("\nDone!")
+    try:
+        print("\nPlaying pcap")
+        print("\nThis may take some time")
+        s = conf.L3socket(iface=interface)
+        pcap = rdpcap("user_generated.pcap")
+        for pkt in pcap:
+            s.send(pkt)
+        print("\nDone!")
+    except IOError as error:
+        print("\nPlease select a valid interface")
+        print("\n" + str(error))
 
 """
 Purpose: Generate a random ipv4 address

@@ -83,18 +83,14 @@ def create_udp_flow(number_of_flows):
     complete_packet_list.extend(packet_list)
     packet_list = []
 
-def play_pcap():
-    #pcap = rdpcap('incremental_length_test.pcap')
-    s = conf.L3socket(iface='enp3s0f0')
-    for pkt in packet_list:
-        s.send(pkt)
-
-def play_via_tcpreplay(interface):
+def play_pcap(interface):
     print("\nPlaying pcap via tcpreplay")
     print("\nThis may take some time")
-    command = subprocess.Popen(["tcpreplay", "-i", interface, "user_generated.pcap"], stdout=subprocess.PIPE)
-    output = command.communicate()[0]
-
+    s = conf.L3socket(iface=interface)
+    pcap = rdpcap("user_generated.pcap")
+    for pkt in pcap:
+        s.send(pkt)
+    print("\nDone!")
 
 def generate_ipv4_addr():
     bits = getrandbits(32)
@@ -113,27 +109,11 @@ def generate_ipv6_addr():
     return addr_str
 
 def create_pcap_file():
-    print ("\nCreating your Pcap, this may take some time...")
-    print("user_traffic: " + str(complete_packet_list))
-
     if len(complete_packet_list) != 0:
+        print ("\nCreating your Pcap, this may take some time...")
+        #print("user_traffic: " + str(complete_packet_list))
         wrpcap("user_generated.pcap", complete_packet_list)
         clear_complete_packet_list()
         print ("\nPcap creation done!")
     else:
         print ("\nYou have not created any packets to save!")
-
-'''
-def make_pcap():
-    t0 = time.time()
-    makepcap()
-    wrpcap("large_incremental_length_test.pcap", packet_list)
-    t1 = time.time()
-    print("Time taken to generate packets: " + str(t1 - t0))
-
-    t2 = time.time()
-    #play_pcap()
-    play_via_tcpreplay()
-    t3 = time.time()
-    print("Time taken to play traffic: " + str(t3 - t2))
-'''

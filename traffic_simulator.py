@@ -32,7 +32,7 @@ def create_pcap_menu():
             print ("\nPlease Enter a valid number!")
             create_pcap_menu()
     elif choice1 == "B" or choice1 =="b":
-        number_of_UDP_flows = raw_input("\nEnter number of UDP flows")
+        number_of_UDP_flows = raw_input("\nEnter number of UDP flows: ")
         if number_of_UDP_flows.isdigit():
             create_packet.create_udp_flow(number_of_UDP_flows)
             print ("\nUDP flow created, remember to save the pcap!")
@@ -58,14 +58,16 @@ def select_pcap():
     #raw_input("Press [Enter] to continue...")
 
 def play_pcap():
-    print ("\nYou selected play pcap! ")
-    os.listdir('/sys/class/net/')
+    print ("\nYou selected: Play pcap! ")
+    print ("\nHere is a list of available interfaces!\n ")
+    os.system('ifconfig')
     interface = raw_input("\nEnter interface to play pcap out of: ")
-    create_packet.play_via_tcpreplay()
-    #raw_input("Press [Enter] to continue...")
+    create_packet.play_pcap(interface)
+    display_menu_screen()
+
 
 def display_menu_screen():
-
+    #os.system('clear')
     # Print some badass ascii art header here !
     print (header)
     print "version 0.1\n"
@@ -86,8 +88,7 @@ def display_menu_screen():
     else:
         print("You must only select either A or B")
         print("Please try again")
-        os.system('clear')
-        display_menu_screen()
+        #display_menu_screen()
 
 def main():
     os.system('clear')

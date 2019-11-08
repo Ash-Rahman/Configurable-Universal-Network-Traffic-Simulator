@@ -1,0 +1,39 @@
+[{
+    "TrafficProfiles": [
+    {
+        "TrafficProfile": {
+            "ProtocolType": "TCP",
+            "IPVType": 4,
+            "SourceAddress": "random",
+            "DestAddress": "random",
+            "SourcePort": 26,
+            "DestPort": 40,
+            "PacketSize": 900,
+            "NumberOfFlows": 10
+        }
+    },
+    {
+        "TrafficProfile": {
+            "ProtocolType": "UDP",
+            "IPVType": 4,
+            "SourceAddress": "172.16.4.77",
+            "DestAddress": "172.16.6.220",
+            "SourcePort": 26,
+            "DestPort": 40,
+            "PacketSize": 900,
+            "NumberOfFlows": 3
+        }
+    }],
+
+    "NetworkInterface": 
+    {
+        "FirstInterface": "enp1s0f1",
+        "SecondInterface": "enp3s0f0"
+    },
+
+    "PcapOptions":
+    {
+        "saveToPcap": "True",
+        "PcapName": "ExampleName.pcap"
+    }
+}]

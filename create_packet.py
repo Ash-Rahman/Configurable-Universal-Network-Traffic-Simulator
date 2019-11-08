@@ -18,23 +18,33 @@ Purpose: Generates a tcp flow
 parameters: number_of_flows (int) takes a number of flows to generate
 Returns: N/A
 """
-def create_tcp_flow(number_of_flows, ipv_type):
+def create_tcp_flow(ipv_type, source_address, dest_address, source_port, dest_port, packet_size, number_of_flows):
     packet_list = []
     pktSeq1 = 1
     pktSeq2 = 1
     count = 0
 
-    ipv_x = int(ipv_type)
     while (count < int(number_of_flows)):
-        if ipv_x == 4:
-            ipv_x_addr1 = generate_ipv4_addr()
-            ipv_x_addr2 = generate_ipv4_addr()
-        elif ipv_x == 6:
-            ipv_x_addr1 = generate_ipv6_addr()
-            ipv_x_addr2 = generate_ipv6_addr()
+        if ipv_type == 4:
+            if check_if_ipaddress_is_random(source_address) == True:
+                ipv_x_addr1 = generate_ipv4_addr()
+            else:
+                ipv_x_addr1 = source_address
+
+            if check_if_ipaddress_is_random(dest_address) == True:
+                ipv_x_addr2 = generate_ipv4_addr()
+            else:
+                ipv_x_addr2 = dest_address
         else:
-            ipv_x_addr1 = generate_ipv4_addr()
-            ipv_x_addr2 = generate_ipv4_addr()
+            if check_if_ipaddress_is_random(source_address) == True:
+                ipv_x_addr1 = generate_ipv6_addr()
+            else:
+                ipv_x_addr1 = source_address
+
+            if check_if_ipaddress_is_random(dest_address) == True:
+                ipv_x_addr2 = generate_ipv6_addr()
+            else:
+                ipv_x_addr2 = dest_address
 
         # SYN message
         p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='S',seq=0,ack=0)
@@ -49,12 +59,12 @@ def create_tcp_flow(number_of_flows, ipv_type):
         packet_list.extend(p)
 
         # PSH / ACK message
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='PA',seq=pktSeq1)/Raw(RandString(size=1))
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='PA',seq=pktSeq1)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
         pktSeq1 += count;
 
         # PSH / ACK message
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=40,dport=26,flags='PA',seq=pktSeq2)/Raw(RandString(size=1))
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=40,dport=26,flags='PA',seq=pktSeq2)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
         pktSeq2 += count;
 
@@ -77,7 +87,7 @@ Purpose: Generates a udp flow
 parameters: number_of_flows (int) takes a number of flows to generate
 Returns: N/A
 """
-def create_udp_flow(number_of_flows, ipv_type):
+def create_udp_flow(source_address, dest_address, source_port, dest_port, number_of_flows, ipv_type, packet_size):
     packet_list = []
     count = 0
 
@@ -93,10 +103,10 @@ def create_udp_flow(number_of_flows, ipv_type):
             ipv_x_addr1 = generate_ipv4_addr()
             ipv_x_addr2 = generate_ipv4_addr()
 
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/UDP(sport=26,dport=40)/Raw(RandString(size=1))
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/UDP(sport=26,dport=40)/Raw(RandString(size=9000))
         packet_list.extend(p)
 
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/UDP(sport=40,dport=26)/Raw(RandString(size=1))
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/UDP(sport=40,dport=26)/Raw(RandString(size=9000))
         packet_list.extend(p)
 
         count += 1
@@ -125,8 +135,6 @@ def transmit_traffic(interface, traffic_source, optional_pcap_name=""):
             s.send(pkt)
     except IOError as IOerror:
         print("\nERROR: " + str(IOerror))
-    except Exception as e:
-        print("\nUnexpected ERROR: " + str(e))
     else:
         print("\nDone!")
 
@@ -176,3 +184,9 @@ Returns: N/A
 def clear_complete_packet_list():
     global complete_packet_list
     complete_packet_list = []
+
+def check_if_ipaddress_is_random(ipAddress):
+    if ipAddress == "random":
+        return True
+    else:
+        return False

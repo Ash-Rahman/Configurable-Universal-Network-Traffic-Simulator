@@ -8,17 +8,17 @@
         "SourcePort": 26,
         "DestPort": 40,
         "PacketSize": 900,
-        "NumberOfFlows": 10
+        "NumberOfFlows": 2
     },
     {
         "ProtocolType": "UDP",
         "IPVType": 4,
-        "SourceAddress": "172.16.4.77",
-        "DestAddress": "172.16.6.220",
+        "SourceAddress": "183.141.158.249",
+        "DestAddress": "129.237.101.13",
         "SourcePort": 26,
         "DestPort": 40,
         "PacketSize": 900,
-        "NumberOfFlows": 3
+        "NumberOfFlows": 2
     }
     ],
 
@@ -30,7 +30,7 @@
 
     "PcapOptions":
     {
-        "saveToPcap": "True",
+        "SaveThePcap": "True",
         "PcapName": "ExampleName.pcap"
     }
 }]

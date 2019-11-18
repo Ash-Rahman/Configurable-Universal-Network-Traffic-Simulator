@@ -7,11 +7,15 @@ from ipaddress import IPv4Address, IPv6Address
 import sys
 import time
 import subprocess
+import logging
 
 ether_1_addr = "90:e2:ba:aa:78:a8"
 ether_2_addr = "90:e2:ba:aa:69:05"
 
 complete_packet_list = []
+
+
+
 
 """
 Purpose: Generates a tcp flow
@@ -47,73 +51,85 @@ def create_tcp_flow(ipv_type, source_address, dest_address, source_port, dest_po
                 ipv_x_addr2 = dest_address
 
         # SYN message
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='S',seq=0,ack=0)
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=source_port,dport=dest_port,flags='S',seq=0,ack=0)
         packet_list.extend(p)
 
         # SYN / ACK
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=40,dport=26,flags='SA',seq=0, ack=1)
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=dest_port,dport=source_port,flags='SA',seq=0, ack=1)
         packet_list.extend(p)
 
         # ACK message
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='A',seq=1, ack=1)
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=source_port,dport=dest_port,flags='A',seq=1, ack=1)
         packet_list.extend(p)
 
         # PSH / ACK message
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='PA',seq=pktSeq1)/Raw(RandString(size=packet_size))
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=source_port,dport=dest_port,flags='PA',seq=pktSeq1)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
         pktSeq1 += count;
 
         # PSH / ACK message
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=40,dport=26,flags='PA',seq=pktSeq2)/Raw(RandString(size=packet_size))
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=dest_port,dport=source_port,flags='PA',seq=pktSeq2)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
         pktSeq2 += count;
 
         # FIN message
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=26,dport=40,flags='F',seq=pktSeq1,ack=0)
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/TCP(sport=source_port,dport=dest_port,flags='F',seq=pktSeq1,ack=0)
         packet_list.extend(p)
 
         # FIN / ACK
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=40,dport=26,flags='FA',seq=pktSeq2, ack=1)
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/TCP(sport=dest_port,dport=source_port,flags='FA',seq=pktSeq2, ack=1)
         packet_list.extend(p)
 
         count += 1
 
     complete_packet_list.extend(packet_list)
+    logging.info("Full TCP packet list: " + str(complete_packet_list))
+
     packet_list = []
-    print("\nTCP flow created, remember to save the pcap!")
 
 """
 Purpose: Generates a udp flow
 parameters: number_of_flows (int) takes a number of flows to generate
 Returns: N/A
 """
-def create_udp_flow(source_address, dest_address, source_port, dest_port, number_of_flows, ipv_type, packet_size):
+def create_udp_flow(ipv_type, source_address, dest_address, source_port, dest_port, packet_size, number_of_flows):
     packet_list = []
     count = 0
 
-    ipv_x = int(ipv_type)
     while (count < int(number_of_flows)):
-        if ipv_x == 4:
-            ipv_x_addr1 = generate_ipv4_addr()
-            ipv_x_addr2 = generate_ipv4_addr()
-        elif ipv_x == 6:
-            ipv_x_addr1 = generate_ipv6_addr()
-            ipv_x_addr2 = generate_ipv6_addr()
-        else:
-            ipv_x_addr1 = generate_ipv4_addr()
-            ipv_x_addr2 = generate_ipv4_addr()
+        if ipv_type == 4:
+            if check_if_ipaddress_is_random(source_address) == True:
+                ipv_x_addr1 = generate_ipv4_addr()
+            else:
+                ipv_x_addr1 = source_address
 
-        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/UDP(sport=26,dport=40)/Raw(RandString(size=9000))
+            if check_if_ipaddress_is_random(dest_address) == True:
+                ipv_x_addr2 = generate_ipv4_addr()
+            else:
+                ipv_x_addr2 = dest_address
+        else:
+            if check_if_ipaddress_is_random(source_address) == True:
+                ipv_x_addr1 = generate_ipv6_addr()
+            else:
+                ipv_x_addr1 = source_address
+
+            if check_if_ipaddress_is_random(dest_address) == True:
+                ipv_x_addr2 = generate_ipv6_addr()
+            else:
+                ipv_x_addr2 = dest_address
+
+        p=Ether(src=ether_1_addr, dst=ether_2_addr)/IP(src=ipv_x_addr1,dst=ipv_x_addr2)/UDP(sport=source_port,dport=dest_port)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
 
-        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/UDP(sport=40,dport=26)/Raw(RandString(size=9000))
+        p=Ether(src=ether_2_addr, dst=ether_1_addr)/IP(src=ipv_x_addr2,dst=ipv_x_addr1)/UDP(sport=dest_port,dport=source_port)/Raw(RandString(size=packet_size))
         packet_list.extend(p)
 
         count += 1
 
     complete_packet_list.extend(packet_list)
+    logging.info("Full UDP packet list: " + str(complete_packet_list))
+
     packet_list = []
-    print("\nUDP flow created, remember to save the pcap!")
 
 """
 Purpose: Transmits pcap file through interface
@@ -122,7 +138,7 @@ Returns: N/A
 """
 def transmit_traffic(interface, traffic_source, optional_pcap_name=""):
     try:
-        if int(traffic_source) == 1:
+        if traffic_source == "pcap":
             pcap = rdpcap(optional_pcap_name)
             print("\nPlaying traffic from " + optional_pcap_name)
         else:
@@ -130,7 +146,6 @@ def transmit_traffic(interface, traffic_source, optional_pcap_name=""):
             print("\nPlaying traffic from application memory")
 
         s = conf.L3socket(iface=interface)
-        print("\nPlaying traffic, this may take some time")
         for pkt in pcap:
             s.send(pkt)
     except IOError as IOerror:

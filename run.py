@@ -51,13 +51,23 @@ def main():
                 packetSize = profiles['PacketSize']
                 numberOfFlows = profiles['NumberOfFlows']
 
-                print str((ipvType, sourceAddress, destAddress, sourcePort, destPort, packetSize, numberOfFlows))
+                logging.info("Packet info from json file: " + str((ipvType, sourceAddress, destAddress, sourcePort, destPort, packetSize, numberOfFlows)))
+
                 if protocolType == "TCP":
                     create_packet.create_tcp_flow(ipvType, sourceAddress, destAddress, sourcePort, destPort, packetSize, numberOfFlows)
                 elif protocolType == "UDP":
                     create_packet.create_udp_flow(ipvType, sourceAddress, destAddress, sourcePort, destPort, packetSize, numberOfFlows)
 
-            
+            firstNetworkInterface = configuration[0]['NetworkInterface']['FirstInterface']
+
+            logging.info("Network interface selected: " + str(firstNetworkInterface))
+
+            if configuration[0]['PcapOptions']['SaveThePcap'] == "True":
+                filename = configuration[0]['PcapOptions']['PcapName']
+                create_packet.create_pcap_file(filename)
+                create_packet.transmit_traffic(firstNetworkInterface, "pcap", filename)
+            else:
+                create_packet.transmit_traffic(firstNetworkInterface, "memory")
 
 if __name__ == "__main__":
     main()

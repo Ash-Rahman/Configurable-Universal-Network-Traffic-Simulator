@@ -24,8 +24,7 @@
 
     "NetworkInterface": 
     {
-        "FirstInterface": "enp1s0f1",
-        "SecondInterface": "enp3s0f0"
+        "FirstInterface": "enp1s0f1"
     },
 
     "PcapOptions":

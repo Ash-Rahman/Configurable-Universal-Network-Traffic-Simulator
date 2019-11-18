@@ -14,9 +14,6 @@ ether_2_addr = "90:e2:ba:aa:69:05"
 
 complete_packet_list = []
 
-
-
-
 """
 Purpose: Generates a tcp flow
 parameters: number_of_flows (int) takes a number of flows to generate
